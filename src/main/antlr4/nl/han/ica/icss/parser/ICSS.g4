@@ -1,34 +1,30 @@
 grammar ICSS;
 
 //--- LEXER: ---
-
 // IF support:
 IF: 'if';
 ELSE: 'else';
 BOX_BRACKET_OPEN: '[';
 BOX_BRACKET_CLOSE: ']';
 
-
-//Literals
+// Literals
 TRUE: 'TRUE';
 FALSE: 'FALSE';
 PIXELSIZE: [0-9]+ 'px';
 PERCENTAGE: [0-9]+ '%';
 SCALAR: [0-9]+;
-
-
-//Color value takes precedence over id idents
 COLOR: '#' [0-9a-f] [0-9a-f] [0-9a-f] [0-9a-f] [0-9a-f] [0-9a-f];
 
-//Specific identifiers for id's and css classes
+// Selectors
 ID_IDENT: '#' [a-z0-9\-]+;
 CLASS_IDENT: '.' [a-z0-9\-]+;
+IDENT: [a-z]+;
 
-//General identifiers
+// General identifiers
 LOWER_IDENT: [a-z] [a-z0-9\-]*;
 CAPITAL_IDENT: [A-Z] [A-Za-z0-9_]*;
 
-//All whitespace is skipped
+// All whitespace is skipped
 WS: [ \t\r\n]+ -> skip;
 
 //
@@ -41,9 +37,12 @@ MIN: '-';
 MUL: '*';
 ASSIGNMENT_OPERATOR: ':=';
 
-
-
-
 //--- PARSER: ---
-stylesheet: EOF;
+stylesheet: identifier+;
+identifier: (IDENT | CLASS_IDENT | ID_IDENT) properties;
+properties: OPEN_BRACE property+ CLOSE_BRACE;
+property: (color | backgroundColor | width) ';';
+color: 'color' COLON COLOR;
+backgroundColor: 'background-color' COLON COLOR;
+width: 'width' COLON PIXELSIZE;
 
