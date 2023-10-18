@@ -47,17 +47,21 @@ colorValue: COLOR;
 pixelValue: PIXELSIZE;
 percentageValue: PERCENTAGE;
 boolValue: (TRUE | FALSE);
-variableReference: CAPITAL_IDENT;
 
+// Variables
+variableReference: CAPITAL_IDENT;
 variableValue: (colorValue | pixelValue | boolValue | percentageValue);
 variableAssignment: variableReference ASSIGNMENT_OPERATOR variableValue SEMICOLON;
 
 // Properties
 properties: OPEN_BRACE property+ CLOSE_BRACE;
-property: (color | backgroundColor | width) SEMICOLON;
-color: 'color' COLON (colorValue | CAPITAL_IDENT);
-backgroundColor: 'background-color' COLON (COLOR | CAPITAL_IDENT);
-width: 'width' COLON (PIXELSIZE | CAPITAL_IDENT);
+propertyName: 'color' | 'background-color' | 'width';
+propertyValue: (colorValue | pixelValue | boolValue | percentageValue | variableReference);
+property: propertyName COLON propertyValue SEMICOLON;
+
+color: 'color' COLON (colorValue | variableReference);
+backgroundColor: 'background-color' COLON (colorValue | variableReference);
+width: 'width' COLON (pixelValue | variableReference);
 
 // Calculations
 //multiplication: (SCALAR | multiplication) * (SCALAR | multiplication);

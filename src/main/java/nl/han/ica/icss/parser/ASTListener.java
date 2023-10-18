@@ -80,14 +80,14 @@ public class ASTListener extends ICSSBaseListener {
 
     @Override
     public void enterPercentageValue(ICSSParser.PercentageValueContext ctx) {
-        printEnter("PixelValue", ctx.getText());
+        printEnter("PercentageValue", ctx.getText());
 
         currentContainer.peek().addChild(new PercentageLiteral(ctx.getText()));
     }
 
     @Override
     public void enterBoolValue(ICSSParser.BoolValueContext ctx) {
-        printEnter("PixelValue", ctx.getText());
+        printEnter("BoolValue", ctx.getText());
 
         currentContainer.peek().addChild(new BoolLiteral(ctx.getText()));
     }
@@ -99,11 +99,6 @@ public class ASTListener extends ICSSBaseListener {
         var currentNode = currentContainer.peek();
 
         currentNode.addChild(new VariableReference(ctx.getText()));
-    }
-
-    @Override
-    public void enterVariableValue(ICSSParser.VariableValueContext ctx) {
-        printEnter("VariableValue", ctx.getText());
     }
 
     @Override
@@ -128,85 +123,26 @@ public class ASTListener extends ICSSBaseListener {
 
     @Override
     public void enterProperty(ICSSParser.PropertyContext ctx) {
+        printEnter("Property", ctx.getText());
+    }
+
+    @Override
+    public void enterPropertyName(ICSSParser.PropertyNameContext ctx) {
         String value = ctx.getText();
 
-        printEnter("Property", value);
+        printEnter("PropertyName", value);
 
         Declaration declaration = new Declaration(value);
 
-        // Add Declaration to Stylerule
         currentContainer.peek().addChild(declaration);
 
-        // Push Declaration
         currentContainer.push(declaration);
     }
 
     @Override
     public void exitProperty(ICSSParser.PropertyContext ctx) {
-        // Pop Declaration
+        printExit("Property", ctx.getText());
         currentContainer.pop();
-    }
-
-    @Override
-    public void enterColor(ICSSParser.ColorContext ctx) {
-        printEnter("Color", ctx.getText());
-
-        String value = ctx.getText().split(":")[1];
-
-        // Get value from "color:{value}"
-        if (isVariable(value)) {
-            addVariableReferenceChild(value);
-        } else {
-            ColorLiteral node = new ColorLiteral(ctx.getText().split(":")[1]);
-
-            currentContainer.peek().addChild(node);
-        }
-    }
-
-    @Override
-    public void enterBackgroundColor(ICSSParser.BackgroundColorContext ctx) {
-        printEnter("BackgroundColor", ctx.getText());
-
-        // Get value from "background-color:{value}"
-        String value = ctx.getText().split(":")[1];
-
-        if (isVariable(value)) {
-            addVariableReferenceChild(value);
-        } else {
-            ColorLiteral node = new ColorLiteral(value);
-
-            currentContainer.peek().addChild(node);
-        }
-    }
-
-    @Override
-    public void exitBackgroundColor(ICSSParser.BackgroundColorContext ctx) {
-        super.exitBackgroundColor(ctx);
-    }
-
-    @Override
-    public void enterWidth(ICSSParser.WidthContext ctx) {
-        printEnter("Width", ctx.getText());
-
-        // Get value from "width:{value}"
-        String value = ctx.getText().split(":")[1];
-
-        if (isVariable(value)) {
-            addVariableReferenceChild(value);
-        } else {
-            ASTNode node;
-
-            // Check unit of measurement.
-            if (value.endsWith("px")) {
-                node = new PixelLiteral(value);
-            } else if (value.endsWith("%")) {
-                node = new PercentageLiteral(value);
-            } else {
-                throw new RuntimeException("Unit of measurement not recognized for value \"" + value + "\"");
-            }
-
-            currentContainer.peek().addChild(node);
-        }
     }
 
     private Selector getSelector(String identifier) {
@@ -229,16 +165,14 @@ public class ASTListener extends ICSSBaseListener {
         return selector;
     }
 
-    private void addVariableReferenceChild(String name) {
-        currentContainer.peek().addChild(new VariableReference(name));
-    }
-
-    private boolean isVariable(String value) {
-        return value.matches(variableIdRegex);
-    }
-
     private void printEnter(String enter, @Nullable String value) {
         System.out.println("ENTER " + enter);
+        if (value != null) System.out.println(value);
+        System.out.println();
+    }
+
+    private void printExit(String exit, @Nullable String value) {
+        System.out.println("EXIT " + exit);
         if (value != null) System.out.println(value);
         System.out.println();
     }
