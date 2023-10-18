@@ -11,7 +11,7 @@ public class HANStack<T> implements IHANStack<T> {
     @Override
     public T pop() {
         T value = linkedList.get(linkedList.getSize() - 1);
-        linkedList.delete(linkedList.getSize() - 1);
+        if(value != null)linkedList.delete(linkedList.getSize() - 1);
 
         return value;
     }

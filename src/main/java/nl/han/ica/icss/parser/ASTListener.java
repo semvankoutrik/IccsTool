@@ -4,10 +4,10 @@ package nl.han.ica.icss.parser;
 import nl.han.ica.datastructures.HANStack;
 import nl.han.ica.datastructures.IHANStack;
 import nl.han.ica.icss.ast.*;
-import nl.han.ica.icss.ast.literals.BoolLiteral;
-import nl.han.ica.icss.ast.literals.ColorLiteral;
-import nl.han.ica.icss.ast.literals.PercentageLiteral;
-import nl.han.ica.icss.ast.literals.PixelLiteral;
+import nl.han.ica.icss.ast.literals.*;
+import nl.han.ica.icss.ast.operations.AddOperation;
+import nl.han.ica.icss.ast.operations.MultiplyOperation;
+import nl.han.ica.icss.ast.operations.SubtractOperation;
 import nl.han.ica.icss.ast.selectors.ClassSelector;
 import nl.han.ica.icss.ast.selectors.IdSelector;
 import nl.han.ica.icss.ast.selectors.TagSelector;
@@ -63,6 +63,113 @@ public class ASTListener extends ICSSBaseListener {
 
     @Override
     public void exitStylerule(ICSSParser.StyleruleContext ctx) {currentContainer.pop();}
+
+    @Override
+    public void enterOperationValue(ICSSParser.OperationValueContext ctx) {
+        printEnter("OperationValue", ctx.getText());
+
+        while(currentContainer.peek() instanceof MultiplyOperation && ((MultiplyOperation) currentContainer.peek()).rhs != null) {
+            currentContainer.pop();
+        }
+    }
+
+    @Override
+    public void enterMultiply(ICSSParser.MultiplyContext ctx) {
+        printEnter("Multiply", ctx.getText());
+
+        var multiply = new MultiplyOperation();
+
+        currentContainer.peek().addChild(multiply);
+        currentContainer.push(multiply);
+    }
+
+    @Override
+    public void exitMultiply(ICSSParser.MultiplyContext ctx) {
+        printExit("Multiply", ctx.getText());
+        if(currentContainer.peek() instanceof MultiplyOperation) currentContainer.pop();
+    }
+
+    @Override
+    public void enterAdd(ICSSParser.AddContext ctx) {
+        printEnter("Add", ctx.getText());
+
+        var add = new AddOperation();
+
+        if(currentContainer.peek() instanceof MultiplyOperation) {
+            var multiplyList = new HANStack<MultiplyOperation>();
+
+            var multiply = currentContainer.pop();
+            multiplyList.push((MultiplyOperation) multiply);
+
+            while(currentContainer.peek() instanceof MultiplyOperation) {
+                multiply = currentContainer.pop();
+                multiplyList.push((MultiplyOperation) multiply);
+            }
+
+            add.addChild(multiply);
+            currentContainer
+                    .peek()
+                    .removeChild(multiply)
+                    .addChild(add);
+            currentContainer.push(add);
+
+            while(multiplyList.peek() != null) {
+                currentContainer.push(multiplyList.pop());
+            }
+        } else {
+            currentContainer.peek().addChild(add);
+            currentContainer.push(add);
+        }
+    }
+
+    @Override
+    public void exitAdd(ICSSParser.AddContext ctx) {
+        printExit("Add", ctx.getText());
+        if(currentContainer.peek() instanceof AddOperation) currentContainer.pop();
+    }
+
+    @Override
+    public void enterSubtract(ICSSParser.SubtractContext ctx) {
+        printEnter("Subtract", ctx.getText());
+
+        var subtract = new SubtractOperation();
+
+        if(currentContainer.peek() instanceof MultiplyOperation) {
+            var multiplyList = new HANStack<MultiplyOperation>();
+
+            var multiply = currentContainer.pop();
+            multiplyList.push((MultiplyOperation) multiply);
+
+            while(currentContainer.peek() instanceof MultiplyOperation) {
+                multiply = currentContainer.pop();
+                multiplyList.push((MultiplyOperation) multiply);
+            }
+
+            subtract.addChild(multiply);
+            currentContainer
+                    .peek()
+                    .removeChild(multiply)
+                    .addChild(subtract);
+            currentContainer.push(subtract);
+
+            while(multiplyList.peek() != null) {
+                currentContainer.push(multiplyList.pop());
+            }
+        } else {
+            currentContainer.peek().addChild(subtract);
+            currentContainer.push(subtract);
+        }
+    }
+
+    @Override
+    public void exitSubtract(ICSSParser.SubtractContext ctx) {if(currentContainer.peek() instanceof SubtractOperation)currentContainer.pop();}
+
+    @Override
+    public void enterScalarValue(ICSSParser.ScalarValueContext ctx) {
+        printEnter("ScalarValue", ctx.getText());
+
+        currentContainer.peek().addChild(new ScalarLiteral(ctx.getText()));
+    }
 
     @Override
     public void enterColorValue(ICSSParser.ColorValueContext ctx) {
@@ -173,7 +280,7 @@ public class ASTListener extends ICSSBaseListener {
 
     private void printExit(String exit, @Nullable String value) {
         System.out.println("EXIT " + exit);
-        if (value != null) System.out.println(value);
+//        if (value != null) System.out.println(value);
         System.out.println();
     }
 }
