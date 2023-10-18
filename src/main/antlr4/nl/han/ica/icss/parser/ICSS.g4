@@ -42,7 +42,15 @@ stylesheet: (variableAssignment | stylerule)+;
 stylerule: selector properties;
 selector: (CLASS_IDENT | ID_IDENT | LOWER_IDENT);
 
+// Calculations
+operationValue: scalarValue | pixelValue | variableReference;
+operation: add | subtract | multiply;
+multiply: operationValue MUL (operationValue | operation);
+add: operationValue PLUS (operationValue | operation);
+subtract: operationValue MIN (operationValue | operation);
+
 // Values
+scalarValue: SCALAR;
 colorValue: COLOR;
 pixelValue: PIXELSIZE;
 percentageValue: PERCENTAGE;
@@ -56,13 +64,5 @@ variableAssignment: variableReference ASSIGNMENT_OPERATOR variableValue SEMICOLO
 // Properties
 properties: OPEN_BRACE property+ CLOSE_BRACE;
 propertyName: 'color' | 'background-color' | 'width';
-propertyValue: (colorValue | pixelValue | boolValue | percentageValue | variableReference);
+propertyValue: (colorValue | pixelValue | boolValue | percentageValue | variableReference | operation);
 property: propertyName COLON propertyValue SEMICOLON;
-
-color: 'color' COLON (colorValue | variableReference);
-backgroundColor: 'background-color' COLON (colorValue | variableReference);
-width: 'width' COLON (pixelValue | variableReference);
-
-// Calculations
-//multiplication: (SCALAR | multiplication) * (SCALAR | multiplication);
-
