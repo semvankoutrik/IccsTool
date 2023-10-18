@@ -37,16 +37,28 @@ MUL: '*';
 ASSIGNMENT_OPERATOR: ':=';
 
 //--- PARSER: ---
-stylesheet: (variable | identifier)+;
+stylesheet: (variableAssignment | stylerule)+;
 
-//variable:
-identifier: (CLASS_IDENT | ID_IDENT | LOWER_IDENT) properties;
-variable: (CAPITAL_IDENT) ASSIGNMENT_OPERATOR (COLOR | PIXELSIZE | TRUE | FALSE) SEMICOLON;
+stylerule: selector properties;
+selector: (CLASS_IDENT | ID_IDENT | LOWER_IDENT);
+
+// Values
+colorValue: COLOR;
+pixelValue: PIXELSIZE;
+percentageValue: PERCENTAGE;
+boolValue: (TRUE | FALSE);
+variableReference: CAPITAL_IDENT;
+
+variableValue: (colorValue | pixelValue | boolValue | percentageValue);
+variableAssignment: variableReference ASSIGNMENT_OPERATOR variableValue SEMICOLON;
 
 // Properties
 properties: OPEN_BRACE property+ CLOSE_BRACE;
 property: (color | backgroundColor | width) SEMICOLON;
-color: 'color' COLON (COLOR | CAPITAL_IDENT);
+color: 'color' COLON (colorValue | CAPITAL_IDENT);
 backgroundColor: 'background-color' COLON (COLOR | CAPITAL_IDENT);
 width: 'width' COLON (PIXELSIZE | CAPITAL_IDENT);
+
+// Calculations
+//multiplication: (SCALAR | multiplication) * (SCALAR | multiplication);
 

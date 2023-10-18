@@ -4,18 +4,15 @@ package nl.han.ica.icss.parser;
 import nl.han.ica.datastructures.HANStack;
 import nl.han.ica.datastructures.IHANStack;
 import nl.han.ica.icss.ast.*;
+import nl.han.ica.icss.ast.literals.BoolLiteral;
 import nl.han.ica.icss.ast.literals.ColorLiteral;
 import nl.han.ica.icss.ast.literals.PercentageLiteral;
 import nl.han.ica.icss.ast.literals.PixelLiteral;
 import nl.han.ica.icss.ast.selectors.ClassSelector;
 import nl.han.ica.icss.ast.selectors.IdSelector;
 import nl.han.ica.icss.ast.selectors.TagSelector;
-import nl.han.ica.icss.helpers.ASTNodeHelper;
-import org.antlr.v4.runtime.ParserRuleContext;
-import org.antlr.v4.runtime.tree.ErrorNode;
-import org.antlr.v4.runtime.tree.TerminalNode;
-import org.checkerframework.checker.units.qual.A;
 
+import javax.annotation.Nullable;
 import java.util.ArrayList;
 
 /**
@@ -23,7 +20,7 @@ import java.util.ArrayList;
  */
 public class ASTListener extends ICSSBaseListener {
 
-    // Accumulator attributes:
+    // Accumulator attributes
     private final AST ast;
     private final String tagIdRegex = "[a-z][a-z0-9\\-]*";
     private final String variableIdRegex = "[A-Z][a-zA-Z0-9_]*";
@@ -42,8 +39,7 @@ public class ASTListener extends ICSSBaseListener {
 
     @Override
     public void enterStylesheet(ICSSParser.StylesheetContext ctx) {
-        System.out.println("ENTER stylesheet");
-        System.out.println(ctx.getText());
+        printEnter("Stylesheet", null);
 
         Stylesheet stylesheetNode = new Stylesheet();
         currentContainer.push(stylesheetNode);
@@ -52,46 +48,91 @@ public class ASTListener extends ICSSBaseListener {
     }
 
     @Override
-    public void enterIdentifier(ICSSParser.IdentifierContext ctx) {
-        System.out.println("ENTER Identifier");
-        System.out.println(ctx.getText());
+    public void enterStylerule(ICSSParser.StyleruleContext ctx) {
+        printEnter("Identifier", ctx.getText());
 
         String identifier = ctx.getChild(0).getText();
 
-        if (isVariable(identifier)) {
-            VariableAssignment variableAssignment = new VariableAssignment();
-        } else {
-            Selector selector = getSelector(identifier);
+        Selector selector = getSelector(identifier);
 
-            Stylerule stylerule = new Stylerule(selector, new ArrayList<>());
+        Stylerule stylerule = new Stylerule(selector, new ArrayList<>());
 
-            currentContainer.peek().addChild(stylerule);
-            currentContainer.push(stylerule);
-        }
+        currentContainer.peek().addChild(stylerule);
+        currentContainer.push(stylerule);
     }
 
     @Override
-    public void exitIdentifier(ICSSParser.IdentifierContext ctx) {
-        System.out.println("EXIT Identifier");
+    public void exitStylerule(ICSSParser.StyleruleContext ctx) {currentContainer.pop();}
 
-        // Pop Selector
+    @Override
+    public void enterColorValue(ICSSParser.ColorValueContext ctx) {
+        printEnter("ColorValue", ctx.getText());
+
+        currentContainer.peek().addChild(new ColorLiteral(ctx.getText()));
+    }
+
+    @Override
+    public void enterPixelValue(ICSSParser.PixelValueContext ctx) {
+        printEnter("PixelValue", ctx.getText());
+
+        currentContainer.peek().addChild(new PixelLiteral(ctx.getText()));
+    }
+
+    @Override
+    public void enterPercentageValue(ICSSParser.PercentageValueContext ctx) {
+        printEnter("PixelValue", ctx.getText());
+
+        currentContainer.peek().addChild(new PercentageLiteral(ctx.getText()));
+    }
+
+    @Override
+    public void enterBoolValue(ICSSParser.BoolValueContext ctx) {
+        printEnter("PixelValue", ctx.getText());
+
+        currentContainer.peek().addChild(new BoolLiteral(ctx.getText()));
+    }
+
+    @Override
+    public void enterVariableReference(ICSSParser.VariableReferenceContext ctx) {
+        printEnter("VariableReference", ctx.getText());
+
+        var currentNode = currentContainer.peek();
+
+        currentNode.addChild(new VariableReference(ctx.getText()));
+    }
+
+    @Override
+    public void enterVariableValue(ICSSParser.VariableValueContext ctx) {
+        printEnter("VariableValue", ctx.getText());
+    }
+
+    @Override
+    public void enterVariableAssignment(ICSSParser.VariableAssignmentContext ctx) {
+        printEnter("VariableAssignment", ctx.getText());
+
+        VariableAssignment assignment = new VariableAssignment();
+
+        currentContainer.peek().addChild(assignment);
+        currentContainer.push(assignment);
+    }
+
+    @Override
+    public void exitVariableAssignment(ICSSParser.VariableAssignmentContext ctx) {
         currentContainer.pop();
     }
 
     @Override
     public void enterProperties(ICSSParser.PropertiesContext ctx) {
-        System.out.println("ENTER properties");
-        System.out.println(ctx.getText());
+        printEnter("Properties", ctx.getText());
     }
 
     @Override
     public void enterProperty(ICSSParser.PropertyContext ctx) {
-        System.out.println("ENTER property");
-        System.out.println(ctx.getText());
+        String value = ctx.getText();
 
-        String propertyName = ctx.getText().split(":")[0];
+        printEnter("Property", value);
 
-        Declaration declaration = new Declaration(propertyName);
+        Declaration declaration = new Declaration(value);
 
         // Add Declaration to Stylerule
         currentContainer.peek().addChild(declaration);
@@ -108,8 +149,7 @@ public class ASTListener extends ICSSBaseListener {
 
     @Override
     public void enterColor(ICSSParser.ColorContext ctx) {
-        System.out.println("ENTER Color");
-        System.out.println(ctx.getText());
+        printEnter("Color", ctx.getText());
 
         String value = ctx.getText().split(":")[1];
 
@@ -124,14 +164,8 @@ public class ASTListener extends ICSSBaseListener {
     }
 
     @Override
-    public void exitColor(ICSSParser.ColorContext ctx) {
-        super.exitColor(ctx);
-    }
-
-    @Override
     public void enterBackgroundColor(ICSSParser.BackgroundColorContext ctx) {
-        System.out.println("ENTER BackgroundColor");
-        System.out.println(ctx.getText());
+        printEnter("BackgroundColor", ctx.getText());
 
         // Get value from "background-color:{value}"
         String value = ctx.getText().split(":")[1];
@@ -152,8 +186,7 @@ public class ASTListener extends ICSSBaseListener {
 
     @Override
     public void enterWidth(ICSSParser.WidthContext ctx) {
-        System.out.println("ENTER Width");
-        System.out.println(ctx.getText());
+        printEnter("Width", ctx.getText());
 
         // Get value from "width:{value}"
         String value = ctx.getText().split(":")[1];
@@ -190,8 +223,7 @@ public class ASTListener extends ICSSBaseListener {
         // tag
         else if (identifier.matches(tagIdRegex)) {
             selector = new TagSelector(identifier);
-        }
-        else {
+        } else {
             throw new RuntimeException("Unknown identifier \"" + identifier + "\".");
         }
         return selector;
@@ -203,5 +235,11 @@ public class ASTListener extends ICSSBaseListener {
 
     private boolean isVariable(String value) {
         return value.matches(variableIdRegex);
+    }
+
+    private void printEnter(String enter, @Nullable String value) {
+        System.out.println("ENTER " + enter);
+        if (value != null) System.out.println(value);
+        System.out.println();
     }
 }
