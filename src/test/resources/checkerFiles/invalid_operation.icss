@@ -1,0 +1,13 @@
+ParWidth := 500;
+COLOR := #ff0000;
+
+p {
+    width: 20 + 20px;
+    height: 20% * 30%;
+}
+
+#menu {
+	width: ParWidth + 20px;
+	height: 2px * 5px;
+	height: COLOR * 2px;
+}

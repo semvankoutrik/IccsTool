@@ -304,14 +304,14 @@ public class ASTListener extends ICSSBaseListener {
     }
 
     private void printEnter(String enter, @Nullable String value) {
-        System.out.println("ENTER " + enter);
-        if (value != null) System.out.println(value);
-        System.out.println();
+//        System.out.println("ENTER " + enter);
+//        if (value != null) System.out.println(value);
+//        System.out.println();
     }
 
     private void printExit(String exit, @Nullable String value) {
-        System.out.println("EXIT " + exit);
+//        System.out.println("EXIT " + exit);
 //        if (value != null) System.out.println(value);
-        System.out.println();
+//        System.out.println();
     }
 }

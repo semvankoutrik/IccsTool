@@ -23,7 +23,10 @@ public class Checker {
         ast.root.getChildren()
                 .stream()
                 .filter(node -> node instanceof Stylerule)
-                .forEach(node -> checkVariableReferences((Stylerule) node));
+                .forEach(node -> {
+                    checkVariableReferences(node);
+                    checkOperations(node);
+                });
     }
 
     public void checkVariableReferences(ASTNode node) {
@@ -38,6 +41,16 @@ public class Checker {
                 }
             } else {
                 checkVariableReferences(childNode);
+            }
+        });
+    }
+
+    public void checkOperations(ASTNode node) {
+        node.getChildren().forEach(childNode -> {
+            if (childNode instanceof Operation) {
+                OperationChecker.checkOperation((Operation) childNode, variables);
+            } else {
+                checkOperations(childNode);
             }
         });
     }

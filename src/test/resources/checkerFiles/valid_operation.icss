@@ -1,0 +1,11 @@
+ParWidth := 500px;
+
+p {
+    width: 20px + 20px;
+    height: 2 * 30%;
+}
+
+#menu {
+	width: ParWidth + 20px;
+	height: 2 * 5px;
+}

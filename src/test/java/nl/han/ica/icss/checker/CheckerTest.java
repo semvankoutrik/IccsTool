@@ -45,4 +45,36 @@ public class CheckerTest {
                 .anyMatch(error -> Objects.equals(error.description, "Variable NONEXISTENT not found"))
         );
     }
+
+    @Test
+    public void throwIfInvalidOperands() throws IOException {
+        AST ast = ASTHelper.parseTestFile("checkerFiles/invalid_operation.icss");
+        sut.check(ast);
+
+        var errors = ast.getErrors();
+
+        assertTrue(errors
+                .stream()
+                .anyMatch(error -> Objects.equals(
+                        error.description,
+                        "Operands 20 and 20px are not compatible"
+                ))
+        );
+    }
+
+    @Test
+    public void throwIfNeitherOperandIsScalar() throws IOException {
+        AST ast = ASTHelper.parseTestFile("checkerFiles/invalid_operation.icss");
+        sut.check(ast);
+
+        var errors = ast.getErrors();
+
+        assertTrue(errors
+                .stream()
+                .anyMatch(error -> Objects.equals(
+                        error.description,
+                        "One operand in a multiplication should be a scalar value, given: '20%' '30%'"
+                ))
+        );
+    }
 }
