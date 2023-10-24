@@ -22,19 +22,6 @@ public class CheckerTest {
     }
 
     @Test
-    public void checkVariableAssigment() throws IOException {
-        AST ast = ASTHelper.parseTestFile("level3.icss");
-        sut.check(ast);
-
-        var variables = sut.getGlobalVariables();
-        assertNotNull(variables.get("LinkColor"));
-        assertNotNull(variables.get("ParWidth"));
-        assertNotNull(variables.get("AdjustColor"));
-        assertNotNull(variables.get("UseLinkColor"));
-        assertNull(variables.get("NONEXISTENTVARIABLE"));
-    }
-
-    @Test
     public void nonExistentVariableHasError() throws IOException {
         AST ast = ASTHelper.parseTestFile("checkerFiles/invalid_variable.icss");
         sut.check(ast);

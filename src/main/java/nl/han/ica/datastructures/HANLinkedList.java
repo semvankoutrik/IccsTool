@@ -38,6 +38,16 @@ public class HANLinkedList<T> implements IHANLinkedList<T> {
         throw new IndexOutOfBoundsException();
     }
 
+    @Override
+    public void add(T value) {
+        ListNode<T> current = header;
+
+        while(current.getNext() != null) {
+            current = current.getNext();
+        }
+
+        current.setNext(new ListNode<>(value));
+    }
 
     @Override
     public void delete(int pos) {
@@ -77,6 +87,21 @@ public class HANLinkedList<T> implements IHANLinkedList<T> {
     }
 
     @Override
+    public void removeLast() {
+        ListNode<T> previous = header;
+        ListNode<T> current = header;
+
+        while(current.getNext() != null) {
+            previous = current;
+            current = current.getNext();
+        }
+
+        if(previous == current) header.setData(null);
+
+        previous.setNext(null);
+    }
+
+    @Override
     public T getFirst() {
         return header.getNext().getData();
     }
@@ -92,18 +117,5 @@ public class HANLinkedList<T> implements IHANLinkedList<T> {
         }
 
         return size;
-    }
-
-    @Override
-    public boolean any(Function<T, Boolean> check) {
-        ListNode<T> current = header;
-        boolean found = false;
-
-        while(!found || current.getNext() != null)
-        {
-            found = check.apply(current.getData());
-        }
-
-        return found;
     }
 }

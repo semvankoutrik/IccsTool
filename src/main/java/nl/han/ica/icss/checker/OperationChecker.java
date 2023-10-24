@@ -1,5 +1,6 @@
 package nl.han.ica.icss.checker;
 
+import nl.han.ica.datastructures.IHANLinkedList;
 import nl.han.ica.icss.ast.Expression;
 import nl.han.ica.icss.ast.Literal;
 import nl.han.ica.icss.ast.Operation;
@@ -10,12 +11,14 @@ import nl.han.ica.icss.ast.operations.MultiplyOperation;
 import nl.han.ica.icss.ast.operations.SubtractOperation;
 import nl.han.ica.icss.checker.errors.MissingScalarOperandInMultiplication;
 import nl.han.ica.icss.checker.errors.OperandsNotCompatible;
+import nl.han.ica.icss.helpers.HANLinkedListHelper;
 
 import java.util.HashMap;
 
 public class OperationChecker {
     // TODO: Add resulting rhs of sub-operation
-    public static void checkOperation(Operation operation, HashMap<String, Expression> variables) {
+    public static void checkOperation(Operation operation, IHANLinkedList<HashMap<String, Expression>> variables) {
+        var scopeVariables = HANLinkedListHelper.scopeVariablesListToHashMap(variables);
         Literal lhs;
         Class<?> lhsClass;
 
@@ -25,7 +28,7 @@ public class OperationChecker {
         if (operation.lhs instanceof VariableReference) {
             var variableReference = (VariableReference) operation.lhs;
 
-            var expr = variables.get(variableReference.name);
+            var expr = scopeVariables.get(variableReference.name);
 
             lhs = (Literal) expr;
             lhsClass = expr.getClass();
@@ -37,7 +40,7 @@ public class OperationChecker {
         if (operation.rhs instanceof VariableReference) {
             var variableReference = (VariableReference) operation.rhs;
 
-            var expr = variables.get(variableReference.name);
+            var expr = scopeVariables.get(variableReference.name);
 
             rhs = (Literal) expr;
             rhsClass = expr.getClass();

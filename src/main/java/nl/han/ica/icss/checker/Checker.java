@@ -1,59 +1,39 @@
 package nl.han.ica.icss.checker;
 
+import nl.han.ica.datastructures.HANLinkedList;
+import nl.han.ica.datastructures.IHANLinkedList;
 import nl.han.ica.icss.ast.*;
 
 import java.util.HashMap;
 
 
 public class Checker {
-    private HashMap<String, Expression> globalVariables = new HashMap<>();
+    private final IHANLinkedList<HashMap<String, Expression>> variables = new HANLinkedList<>();
 
     public void check(AST ast) {
-        // Set variables
-        ast.root.getChildren()
-                .stream()
-                .filter(node -> node instanceof VariableAssignment)
-                .forEach(node -> {
-                    var variableAssignment = (VariableAssignment) node;
-
-                    globalVariables.put(variableAssignment.name.name, variableAssignment.expression);
-                });
-
-        // Check stylerules
-        ast.root.getChildren()
-                .stream()
-                .filter(node -> node instanceof Stylerule)
-                .forEach(node -> {
-                    checkOperations(node);
-                    checkDeclarations(node);
-                });
+        check(ast.root, variables);
     }
 
-    public void checkOperations(ASTNode node) {
-        node.getChildren().forEach(childNode -> {
-            if (childNode instanceof Operation) {
-                OperationChecker.checkOperation((Operation) childNode, globalVariables);
-            } else {
-                checkOperations(childNode);
+    private void check(ASTNode astNode, IHANLinkedList<HashMap<String, Expression>> variables) {
+        var scopeVariables = new HashMap<String, Expression>();
+        variables.add(scopeVariables);
+
+        astNode.getChildren().forEach(childNode -> {
+            if (childNode instanceof VariableAssignment) {
+                var variableAssignment = (VariableAssignment) childNode;
+
+                scopeVariables.put(variableAssignment.name.name, variableAssignment.expression);
             }
-        });
-    }
 
-    public void checkDeclarations(ASTNode node) {
-        node.getChildren().forEach(childNode -> {
             if (childNode instanceof Declaration) {
-                DeclarationChecker.checkDeclaration((Declaration) childNode, globalVariables);
-            } else {
-                checkDeclarations(childNode);
+                DeclarationChecker.check((Declaration) childNode, variables);
+            } else if (childNode instanceof Operation) {
+                OperationChecker.checkOperation((Operation) childNode, variables);
             }
+
+            check(childNode, variables);
         });
-    }
 
-    public HashMap<String, Expression> getGlobalVariables() {
-        return globalVariables;
-    }
-
-    public void setGlobalVariables(HashMap<String, Expression> globalVariables) {
-        this.globalVariables = globalVariables;
+        variables.removeLast();
     }
 }

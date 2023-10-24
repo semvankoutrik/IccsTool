@@ -22,13 +22,19 @@ public interface IHANLinkedList<T> {
     void insert(int index, T value);
 
     /**
+     * Adds a value to the highest index + 1 (at the end).
+     * @param value The value to add
+     */
+    void add(T value);
+
+    /**
      * Deletes value at position
      * @param pos position where value is deleted
      */
     void delete(int pos);
 
     /**
-     * Returns generic value T at postion
+     * Returns generic value T at position
      * @param pos position to look up value
      * @return value at position pos
      */
@@ -38,6 +44,11 @@ public interface IHANLinkedList<T> {
      * Removes first element
      */
     void removeFirst();
+
+    /**
+     * Removes last element
+     */
+    void removeLast();
 
     /**
      * Returns first element in O(n) time
@@ -50,6 +61,4 @@ public interface IHANLinkedList<T> {
      * @return number of items in list
      */
     int getSize();
-
-    boolean any(Function<T, Boolean> check);
 }
