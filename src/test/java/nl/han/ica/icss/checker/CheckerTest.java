@@ -26,7 +26,7 @@ public class CheckerTest {
         AST ast = ASTHelper.parseTestFile("level3.icss");
         sut.check(ast);
 
-        var variables = sut.getVariables();
+        var variables = sut.getGlobalVariables();
         assertNotNull(variables.get("LinkColor"));
         assertNotNull(variables.get("ParWidth"));
         assertNotNull(variables.get("AdjustColor"));

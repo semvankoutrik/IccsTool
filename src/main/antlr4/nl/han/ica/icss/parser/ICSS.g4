@@ -62,7 +62,7 @@ variableValue: (colorValue | scalarValue | pixelValue | boolValue | percentageVa
 variableAssignment: variableReference ASSIGNMENT_OPERATOR variableValue SEMICOLON;
 
 // Properties
-properties: OPEN_BRACE (property | ifClause)* CLOSE_BRACE;
+properties: OPEN_BRACE (property | ifClause | variableAssignment)* CLOSE_BRACE;
 propertyName: 'color' | 'background-color' | 'width' | 'height';
 propertyValue: (colorValue | pixelValue | boolValue | percentageValue | variableReference | operation);
 property: propertyName COLON propertyValue SEMICOLON;

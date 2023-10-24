@@ -6,7 +6,7 @@ import java.util.HashMap;
 
 
 public class Checker {
-    private HashMap<String, Expression> variables = new HashMap<>();
+    private HashMap<String, Expression> globalVariables = new HashMap<>();
 
     public void check(AST ast) {
         // Set variables
@@ -16,7 +16,7 @@ public class Checker {
                 .forEach(node -> {
                     var variableAssignment = (VariableAssignment) node;
 
-                    variables.put(variableAssignment.name.name, variableAssignment.expression);
+                    globalVariables.put(variableAssignment.name.name, variableAssignment.expression);
                 });
 
         // Check stylerules
@@ -32,7 +32,7 @@ public class Checker {
     public void checkOperations(ASTNode node) {
         node.getChildren().forEach(childNode -> {
             if (childNode instanceof Operation) {
-                OperationChecker.checkOperation((Operation) childNode, variables);
+                OperationChecker.checkOperation((Operation) childNode, globalVariables);
             } else {
                 checkOperations(childNode);
             }
@@ -42,18 +42,18 @@ public class Checker {
     public void checkDeclarations(ASTNode node) {
         node.getChildren().forEach(childNode -> {
             if (childNode instanceof Declaration) {
-                DeclarationChecker.checkDeclaration((Declaration) childNode, variables);
+                DeclarationChecker.checkDeclaration((Declaration) childNode, globalVariables);
             } else {
                 checkDeclarations(childNode);
             }
         });
     }
 
-    public HashMap<String, Expression> getVariables() {
-        return variables;
+    public HashMap<String, Expression> getGlobalVariables() {
+        return globalVariables;
     }
 
-    public void setVariables(HashMap<String, Expression> variables) {
-        this.variables = variables;
+    public void setGlobalVariables(HashMap<String, Expression> globalVariables) {
+        this.globalVariables = globalVariables;
     }
 }

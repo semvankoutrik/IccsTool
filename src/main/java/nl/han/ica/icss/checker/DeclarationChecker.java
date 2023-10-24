@@ -16,14 +16,9 @@ public class DeclarationChecker {
 
         if (value instanceof VariableReference) {
             var reference = (VariableReference) declaration.expression;
-            var variable = variables.get(reference.name);
-            if (variable == null) {
-                reference.setError("Variable " + reference.name + " not found");
+            value = variables.get(reference.name);
 
-                return;
-            } else {
-                value = variable;
-            }
+            if (value == null) return;
         }
 
         switch (declaration.property.name) {
