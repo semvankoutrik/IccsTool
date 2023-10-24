@@ -1,0 +1,23 @@
+LinkColor := #ff0000;
+ParWidth := 500px;
+AdjustColor := TRUE;
+UseLinkColor := FALSE;
+
+p {
+	if[AdjustColor] {
+	    color: #124532;
+
+	    if[UseLinkColor]{
+	        background-color: LinkColor;
+	        NestedColor := #000111;
+
+	        if[UseLinkColor]{
+                background-color: NestedColor;
+            } else {
+                background-color: NestedColor;
+            }
+	    } else {
+	        background-color: #000000;
+	    }
+	}
+}

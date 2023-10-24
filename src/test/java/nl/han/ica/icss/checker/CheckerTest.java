@@ -1,10 +1,7 @@
 package nl.han.ica.icss.checker;
 
 import nl.han.ica.icss.ast.AST;
-import nl.han.ica.icss.checker.errors.InvalidDeclarationValue;
-import nl.han.ica.icss.checker.errors.MissingScalarOperandInMultiplication;
-import nl.han.ica.icss.checker.errors.OperandsNotCompatible;
-import nl.han.ica.icss.checker.errors.VariableNotFound;
+import nl.han.ica.icss.checker.errors.*;
 import nl.han.ica.utils.ASTHelper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -172,5 +169,41 @@ public class CheckerTest {
         var errors = ast.getErrors();
 
         assertEquals(0, errors.size());
+    }
+
+    @Test
+    public void ifClauseNoError() throws IOException {
+        AST ast = ASTHelper.parseTestFile("checkerFiles/valid_ifclause.icss");
+        sut.check(ast);
+
+        var errors = ast.getErrors();
+
+        assertEquals(0, errors.size());
+    }
+
+    @Test
+    public void invalidConditionalExpression() throws IOException {
+        AST ast = ASTHelper.parseTestFile("checkerFiles/invalid_ifclause.icss");
+        sut.check(ast);
+
+        var errors = ast.getErrors();
+
+        assertTrue(errors
+                .stream()
+                .anyMatch(error -> Objects.equals(error.description, InvalidConditionalExpression.create("500px").getError()))
+        );
+    }
+
+    @Test
+    public void errorVariableOfIfUsedInElse() throws IOException {
+        AST ast = ASTHelper.parseTestFile("checkerFiles/invalid_ifclause.icss");
+        sut.check(ast);
+
+        var errors = ast.getErrors();
+
+        assertTrue(errors
+                .stream()
+                .anyMatch(error -> Objects.equals(error.description, VariableNotFound.create("Color").getError()))
+        );
     }
 }

@@ -1,0 +1,13 @@
+ParWidth := 500px;
+
+p {
+	if[ParWidth] {
+	    color: #124532;
+	}
+
+	if[TRUE] {
+	    Color := #ffffff;
+	} else {
+	    color: Color;
+	}
+}

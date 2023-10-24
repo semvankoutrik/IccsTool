@@ -4,6 +4,7 @@ import nl.han.ica.datastructures.HANLinkedList;
 import nl.han.ica.datastructures.IHANLinkedList;
 import nl.han.ica.icss.ast.*;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 
 
@@ -11,14 +12,14 @@ public class Checker {
     private final IHANLinkedList<HashMap<String, Expression>> variables = new HANLinkedList<>();
 
     public void check(AST ast) {
-        check(ast.root, variables);
+        check(ast.root.getChildren(), variables);
     }
 
-    private void check(ASTNode astNode, IHANLinkedList<HashMap<String, Expression>> variables) {
+    public static void check(ArrayList<ASTNode> children, IHANLinkedList<HashMap<String, Expression>> variables) {
         var scopeVariables = new HashMap<String, Expression>();
         variables.add(scopeVariables);
 
-        astNode.getChildren().forEach(childNode -> {
+        children.forEach(childNode -> {
             if (childNode instanceof VariableAssignment) {
                 var variableAssignment = (VariableAssignment) childNode;
 
@@ -31,7 +32,11 @@ public class Checker {
                 OperationChecker.checkOperation((Operation) childNode, variables);
             }
 
-            check(childNode, variables);
+            if (childNode instanceof IfClause) {
+                IfClauseChecker.check((IfClause) childNode, variables);
+            } else {
+                check(childNode.getChildren(), variables);
+            }
         });
 
         variables.removeLast();
