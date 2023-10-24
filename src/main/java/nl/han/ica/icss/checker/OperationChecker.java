@@ -11,6 +11,7 @@ import nl.han.ica.icss.ast.operations.MultiplyOperation;
 import nl.han.ica.icss.ast.operations.SubtractOperation;
 import nl.han.ica.icss.checker.errors.MissingScalarOperandInMultiplication;
 import nl.han.ica.icss.checker.errors.OperandsNotCompatible;
+import nl.han.ica.icss.checker.errors.VariableNotFound;
 import nl.han.ica.icss.helpers.HANLinkedListHelper;
 
 import java.util.HashMap;
@@ -30,8 +31,14 @@ public class OperationChecker {
 
             var expr = scopeVariables.get(variableReference.name);
 
-            lhs = (Literal) expr;
-            lhsClass = expr.getClass();
+            if (expr == null) {
+                variableReference.setError(VariableNotFound.create(variableReference.name).getError());
+
+                return;
+            } else {
+                lhs = (Literal) expr;
+                lhsClass = expr.getClass();
+            }
         } else {
             lhs = (Literal) operation.lhs;
             lhsClass = lhs.getClass();
@@ -42,8 +49,14 @@ public class OperationChecker {
 
             var expr = scopeVariables.get(variableReference.name);
 
-            rhs = (Literal) expr;
-            rhsClass = expr.getClass();
+            if (expr == null) {
+                variableReference.setError(VariableNotFound.create(variableReference.name).getError());
+
+                return;
+            } else {
+                rhs = (Literal) expr;
+                rhsClass = expr.getClass();
+            }
         } else {
             rhs = (Literal) operation.rhs;
             rhsClass = rhs.getClass();
@@ -56,7 +69,7 @@ public class OperationChecker {
         }
 
         if (operation instanceof MultiplyOperation) {
-            if(!(lhs instanceof ScalarLiteral) && !(rhs instanceof ScalarLiteral)) {
+            if (!(lhs instanceof ScalarLiteral) && !(rhs instanceof ScalarLiteral)) {
                 operation.setError(MissingScalarOperandInMultiplication.create(lhs.toString(), rhs.toString()).getError());
             }
         }

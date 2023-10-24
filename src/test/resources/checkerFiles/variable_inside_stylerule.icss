@@ -1,0 +1,5 @@
+p {
+    Color := #000000;
+
+    color: Color;
+}

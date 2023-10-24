@@ -7,6 +7,7 @@ import nl.han.ica.icss.ast.literals.PercentageLiteral;
 import nl.han.ica.icss.ast.literals.PixelLiteral;
 import nl.han.ica.icss.checker.errors.InvalidDeclarationValue;
 import nl.han.ica.icss.checker.errors.UnknownProperty;
+import nl.han.ica.icss.checker.errors.VariableNotFound;
 import nl.han.ica.icss.helpers.HANLinkedListHelper;
 
 import java.util.HashMap;
@@ -22,6 +23,8 @@ public class DeclarationChecker {
             value = scopeVariables.get(reference.name);
 
             if (value == null) {
+                reference.setError(VariableNotFound.create(reference.name).getError());
+
                 return;
             }
         }

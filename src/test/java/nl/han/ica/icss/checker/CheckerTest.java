@@ -30,7 +30,7 @@ public class CheckerTest {
 
         assertTrue(errors
                 .stream()
-                .anyMatch(error -> Objects.equals(error.description, "Variable NONEXISTENT not found"))
+                .anyMatch(error -> Objects.equals(error.description, "Variable NONEXISTENT is not declared in this scope"))
         );
     }
 
@@ -138,5 +138,28 @@ public class CheckerTest {
                         InvalidDeclarationValue.create("height", "FALSE").getError()
                 ))
         );
+    }
+
+    @Test
+    public void errorWhenVariableDeclaredAfterReference() throws IOException {
+        AST ast = ASTHelper.parseTestFile("checkerFiles/variable_after_declaration.icss");
+        sut.check(ast);
+
+        var errors = ast.getErrors();
+
+        assertTrue(errors
+                .stream()
+                .anyMatch(error -> Objects.equals(error.description, "Variable Color is not declared in this scope"))
+        );
+    }
+
+    @Test
+    public void noErrorVariableDeclaredInStylerule() throws IOException {
+        AST ast = ASTHelper.parseTestFile("checkerFiles/variable_inside_stylerule.icss");
+        sut.check(ast);
+
+        var errors = ast.getErrors();
+
+        assertEquals(0, errors.size());
     }
 }
