@@ -1,8 +1,8 @@
 package nl.han.ica.icss.checker;
 
 import nl.han.ica.icss.ast.AST;
-import nl.han.ica.icss.ast.ASTNode;
-import nl.han.ica.icss.ast.VariableReference;
+import nl.han.ica.icss.checker.errors.MissingScalarOperandInMultiplication;
+import nl.han.ica.icss.checker.errors.OperandsNotCompatible;
 import nl.han.ica.utils.ASTHelper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -57,7 +57,7 @@ public class CheckerTest {
                 .stream()
                 .anyMatch(error -> Objects.equals(
                         error.description,
-                        "Operands 20 and 20px are not compatible"
+                        OperandsNotCompatible.create("20", "20px").getError()
                 ))
         );
     }
@@ -73,7 +73,7 @@ public class CheckerTest {
                 .stream()
                 .anyMatch(error -> Objects.equals(
                         error.description,
-                        "One operand in a multiplication should be a scalar value, given: '20%' '30%'"
+                        MissingScalarOperandInMultiplication.create("20%", "30%").getError()
                 ))
         );
     }
