@@ -1,7 +1,6 @@
 package nl.han.ica.icss.checker;
 
 import nl.han.ica.datastructures.IHANLinkedList;
-import nl.han.ica.icss.ast.ElseClause;
 import nl.han.ica.icss.ast.Expression;
 import nl.han.ica.icss.ast.IfClause;
 import nl.han.ica.icss.ast.VariableReference;
@@ -11,7 +10,6 @@ import nl.han.ica.icss.checker.errors.VariableNotFound;
 import nl.han.ica.icss.helpers.HANLinkedListHelper;
 
 import java.util.HashMap;
-import java.util.stream.Collectors;
 
 public class IfClauseChecker {
     public static void check(IfClause node, IHANLinkedList<HashMap<String, Expression>> variables) {
