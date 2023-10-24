@@ -26,7 +26,7 @@ public class OperationEvaluator {
         Expression rightLiteral;
         int leftValue = 0;
         int rightValue = 0;
-        Class<?> literalClass = null;
+        Class<?> literalClass;
 
         if (!(lhs instanceof Literal || lhs instanceof VariableReference)) {
             leftLiteral = evaluate((Operation) lhs, variables);
@@ -34,7 +34,7 @@ public class OperationEvaluator {
             leftLiteral = lhs;
         }
 
-        if (!(rhs instanceof Literal|| rhs instanceof VariableReference)) {
+        if (!(rhs instanceof Literal || rhs instanceof VariableReference)) {
             rightLiteral = evaluate((Operation) rhs, variables);
         } else {
             rightLiteral = rhs;
@@ -46,22 +46,19 @@ public class OperationEvaluator {
         if (rightLiteral instanceof VariableReference) {
             rightLiteral = scopeVariables.get(((VariableReference) rightLiteral).name);
         }
-        if (rightLiteral instanceof ScalarLiteral) rightValue = ((ScalarLiteral) rightLiteral).value;
-        if (rightLiteral instanceof PixelLiteral) rightValue = ((PixelLiteral) rightLiteral).value;
-        if (rightLiteral instanceof PercentageLiteral) rightValue = ((PercentageLiteral) rightLiteral).value;
+        rightValue = getValue(rightLiteral);
 
         if (leftLiteral instanceof VariableReference) {
-            leftLiteral =  scopeVariables.get(((VariableReference) leftLiteral).name);
+            leftLiteral = scopeVariables.get(((VariableReference) leftLiteral).name);
         }
-        if (leftLiteral instanceof ScalarLiteral) leftValue = ((ScalarLiteral) leftLiteral).value;
-        if (leftLiteral instanceof PixelLiteral) leftValue = ((PixelLiteral) leftLiteral).value;
-        if (leftLiteral instanceof PercentageLiteral) leftValue = ((PercentageLiteral) leftLiteral).value;
+        leftValue = getValue(leftLiteral);
 
-        // Get class of returning literal.
+        // Get class of returning literal
         if (leftLiteral instanceof ScalarLiteral) literalClass = rightLiteral.getClass();
         else if (rightLiteral instanceof ScalarLiteral) literalClass = leftLiteral.getClass();
         else literalClass = leftLiteral.getClass();
 
+        // Calculate
         int result;
 
         if (operation instanceof MultiplyOperation) {
@@ -78,5 +75,13 @@ public class OperationEvaluator {
         if(literalClass == PercentageLiteral.class) return new PercentageLiteral(result);
 
         return null;
+    }
+
+    private static int getValue(Expression expression) {
+        if (expression instanceof ScalarLiteral) return ((ScalarLiteral) expression).value;
+        if (expression instanceof PixelLiteral) return ((PixelLiteral) expression).value;
+        if (expression instanceof PercentageLiteral) return ((PercentageLiteral) expression).value;
+
+        return 0;
     }
 }
