@@ -43,7 +43,7 @@ stylerule: selector properties;
 selector: (CLASS_IDENT | ID_IDENT | LOWER_IDENT);
 
 // Calculations
-operationValue: scalarValue | pixelValue | variableReference;
+operationValue: scalarValue | percentageValue | pixelValue | variableReference;
 operation: add | subtract | multiply;
 multiply: operationValue MUL (operationValue | operation);
 add: operationValue PLUS (operationValue | operation);
@@ -58,7 +58,7 @@ boolValue: (TRUE | FALSE);
 
 // Variables
 variableReference: CAPITAL_IDENT;
-variableValue: (colorValue | pixelValue | boolValue | percentageValue);
+variableValue: (colorValue | scalarValue | pixelValue | boolValue | percentageValue);
 variableAssignment: variableReference ASSIGNMENT_OPERATOR variableValue SEMICOLON;
 
 // Properties
