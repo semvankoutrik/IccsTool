@@ -4,6 +4,7 @@ import nl.han.ica.icss.ast.AST;
 import nl.han.ica.icss.checker.errors.InvalidDeclarationValue;
 import nl.han.ica.icss.checker.errors.MissingScalarOperandInMultiplication;
 import nl.han.ica.icss.checker.errors.OperandsNotCompatible;
+import nl.han.ica.icss.checker.errors.VariableNotFound;
 import nl.han.ica.utils.ASTHelper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -30,7 +31,7 @@ public class CheckerTest {
 
         assertTrue(errors
                 .stream()
-                .anyMatch(error -> Objects.equals(error.description, "Variable NONEXISTENT is not declared in this scope"))
+                .anyMatch(error -> Objects.equals(error.description, VariableNotFound.create("NONEXISTENT").getError()))
         );
     }
 
@@ -149,13 +150,23 @@ public class CheckerTest {
 
         assertTrue(errors
                 .stream()
-                .anyMatch(error -> Objects.equals(error.description, "Variable Color is not declared in this scope"))
+                .anyMatch(error -> Objects.equals(error.description, VariableNotFound.create("Color").getError()))
         );
     }
 
     @Test
     public void noErrorVariableDeclaredInStylerule() throws IOException {
         AST ast = ASTHelper.parseTestFile("checkerFiles/variable_inside_stylerule.icss");
+        sut.check(ast);
+
+        var errors = ast.getErrors();
+
+        assertEquals(0, errors.size());
+    }
+
+    @Test
+    public void noErrorValidFile() throws IOException {
+        AST ast = ASTHelper.parseTestFile("checkerFiles/valid.icss");
         sut.check(ast);
 
         var errors = ast.getErrors();

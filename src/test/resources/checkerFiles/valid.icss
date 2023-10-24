@@ -1,0 +1,9 @@
+Color := #ffffff;
+
+p {
+    Width := 20px;
+
+    width: Width + 10px;
+    height: Width * 2;
+    color: Color;
+}
