@@ -1,5 +1,7 @@
 package nl.han.ica.datastructures;
 
+import java.util.function.Function;
+
 public class HANLinkedList<T> implements IHANLinkedList<T> {
     private final ListNode<T> header = new ListNode<>(null);
 
@@ -90,5 +92,18 @@ public class HANLinkedList<T> implements IHANLinkedList<T> {
         }
 
         return size;
+    }
+
+    @Override
+    public boolean any(Function<T, Boolean> check) {
+        ListNode<T> current = header;
+        boolean found = false;
+
+        while(!found || current.getNext() != null)
+        {
+            found = check.apply(current.getData());
+        }
+
+        return found;
     }
 }

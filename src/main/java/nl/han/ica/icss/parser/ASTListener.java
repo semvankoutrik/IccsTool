@@ -22,8 +22,6 @@ public class ASTListener extends ICSSBaseListener {
 
     // Accumulator attributes
     private final AST ast;
-    private final String tagIdRegex = "[a-z][a-z0-9\\-]*";
-    private final String variableIdRegex = "[A-Z][a-zA-Z0-9_]*";
 
     // Use this to keep track of the parent nodes when recursively traversing the ast
     private final IHANStack<ASTNode> currentContainer;
@@ -288,6 +286,7 @@ public class ASTListener extends ICSSBaseListener {
         Selector selector;
 
         // class
+        String tagIdRegex = "[a-z][a-z0-9\\-]*";
         if (identifier.startsWith(".")) {
             selector = new ClassSelector(identifier);
         }
