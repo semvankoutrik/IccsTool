@@ -12,14 +12,14 @@ import nl.han.ica.icss.ast.operations.SubtractOperation;
 import nl.han.ica.icss.checker.errors.MissingScalarOperandInMultiplication;
 import nl.han.ica.icss.checker.errors.OperandsNotCompatible;
 import nl.han.ica.icss.checker.errors.VariableNotFound;
-import nl.han.ica.icss.helpers.HANLinkedListHelper;
+import nl.han.ica.icss.helpers.VariableHelper;
 
 import java.util.HashMap;
 
 public class OperationChecker {
     // TODO: Add resulting rhs of sub-operation
     public static void checkOperation(Operation operation, IHANLinkedList<HashMap<String, Expression>> variables) {
-        var scopeVariables = HANLinkedListHelper.scopeVariablesListToHashMap(variables);
+        var scopeVariables = VariableHelper.scopeVariablesListToHashMap(variables);
         Literal lhs;
         Class<?> lhsClass;
 

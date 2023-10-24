@@ -56,6 +56,8 @@ public interface IHANLinkedList<T> {
      */
     T getFirst();
 
+    T getWhere(Function<T, Boolean> func);
+
     /**
      * Determines size of the list, equals the number of stored items but not the header node
      * @return number of items in list

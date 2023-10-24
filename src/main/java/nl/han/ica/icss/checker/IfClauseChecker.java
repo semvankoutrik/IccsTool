@@ -7,13 +7,13 @@ import nl.han.ica.icss.ast.VariableReference;
 import nl.han.ica.icss.ast.literals.BoolLiteral;
 import nl.han.ica.icss.checker.errors.InvalidConditionalExpression;
 import nl.han.ica.icss.checker.errors.VariableNotFound;
-import nl.han.ica.icss.helpers.HANLinkedListHelper;
+import nl.han.ica.icss.helpers.VariableHelper;
 
 import java.util.HashMap;
 
 public class IfClauseChecker {
     public static void check(IfClause node, IHANLinkedList<HashMap<String, Expression>> variables) {
-        var scopeVariables = HANLinkedListHelper.scopeVariablesListToHashMap(variables);
+        var scopeVariables = VariableHelper.scopeVariablesListToHashMap(variables);
         var expr = node.conditionalExpression;
 
         if (expr instanceof VariableReference) {

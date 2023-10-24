@@ -107,6 +107,25 @@ public class HANLinkedList<T> implements IHANLinkedList<T> {
     }
 
     @Override
+    public T getWhere(Function<T, Boolean> func) {
+        if(header.getNext() == null) return null;
+
+        Boolean found = false;
+        ListNode<T> current = header.getNext();
+
+        while(!found && current.getNext() != null) {
+            found = func.apply(current.getData());
+            current = current.getNext();
+        }
+
+        if(found) {
+            return current.getData();
+        } else {
+            return null;
+        }
+    }
+
+    @Override
     public int getSize() {
         ListNode<T> current = header;
         int size = 0;
