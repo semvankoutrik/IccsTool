@@ -1,0 +1,14 @@
+Color := #000000;
+Bool := FALSE;
+
+p {
+    width: #ffffff;
+    height: TRUE;
+    color: 2px;
+    background-color: 40%;
+}
+
+#menu {
+	width: Color;
+	height: Bool;
+}

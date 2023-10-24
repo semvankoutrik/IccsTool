@@ -34,6 +34,6 @@ public class BoolLiteral extends Literal {
 
     @Override
     public String toString() {
-        return value ? "true" : "false";
+        return value ? "TRUE" : "FALSE";
     }
 }

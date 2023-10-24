@@ -24,25 +24,9 @@ public class Checker {
                 .stream()
                 .filter(node -> node instanceof Stylerule)
                 .forEach(node -> {
-                    checkVariableReferences(node);
                     checkOperations(node);
+                    checkDeclarations(node);
                 });
-    }
-
-    public void checkVariableReferences(ASTNode node) {
-        node.getChildren().forEach(childNode -> {
-            if (childNode instanceof Declaration) {
-                var declaration = (Declaration) childNode;
-
-                if (declaration.expression instanceof VariableReference) {
-                    var reference = (VariableReference) declaration.expression;
-                    var variable = variables.get(reference.name);
-                    if (variable == null) reference.setError("Variable " + reference.name + " not found");
-                }
-            } else {
-                checkVariableReferences(childNode);
-            }
-        });
     }
 
     public void checkOperations(ASTNode node) {
@@ -51,6 +35,16 @@ public class Checker {
                 OperationChecker.checkOperation((Operation) childNode, variables);
             } else {
                 checkOperations(childNode);
+            }
+        });
+    }
+
+    public void checkDeclarations(ASTNode node) {
+        node.getChildren().forEach(childNode -> {
+            if (childNode instanceof Declaration) {
+                DeclarationChecker.checkDeclaration((Declaration) childNode, variables);
+            } else {
+                checkDeclarations(childNode);
             }
         });
     }

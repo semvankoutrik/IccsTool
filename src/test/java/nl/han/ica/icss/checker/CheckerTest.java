@@ -1,6 +1,7 @@
 package nl.han.ica.icss.checker;
 
 import nl.han.ica.icss.ast.AST;
+import nl.han.ica.icss.checker.errors.InvalidDeclarationValue;
 import nl.han.ica.icss.checker.errors.MissingScalarOperandInMultiplication;
 import nl.han.ica.icss.checker.errors.OperandsNotCompatible;
 import nl.han.ica.utils.ASTHelper;
@@ -74,6 +75,80 @@ public class CheckerTest {
                 .anyMatch(error -> Objects.equals(
                         error.description,
                         MissingScalarOperandInMultiplication.create("20%", "30%").getError()
+                ))
+        );
+    }
+
+    @Test
+    public void noErrorsOnValidOperations() throws IOException {
+        AST ast = ASTHelper.parseTestFile("checkerFiles/valid_operation.icss");
+        sut.check(ast);
+
+        var errors = ast.getErrors();
+
+        assertEquals(0, errors.size());
+    }
+
+    @Test
+    public void throwErrorOnInvalidColorDeclarations() throws IOException {
+        AST ast = ASTHelper.parseTestFile("checkerFiles/invalid_declarations.icss");
+        sut.check(ast);
+
+        var errors = ast.getErrors();
+
+        assertTrue(errors
+                .stream()
+                .anyMatch(error -> Objects.equals(
+                        error.description,
+                        InvalidDeclarationValue.create("color", "2px").getError()
+                ))
+        );
+
+        assertTrue(errors
+                .stream()
+                .anyMatch(error -> Objects.equals(
+                        error.description,
+                        InvalidDeclarationValue.create("background-color", "40%").getError()
+                ))
+        );
+    }
+
+    @Test
+    public void throwErrorOnInvalidSizeDeclarations() throws IOException {
+        AST ast = ASTHelper.parseTestFile("checkerFiles/invalid_declarations.icss");
+        sut.check(ast);
+
+        var errors = ast.getErrors();
+
+        assertTrue(errors
+                .stream()
+                .anyMatch(error -> Objects.equals(
+                        error.description,
+                        InvalidDeclarationValue.create("width", "#ffffff").getError()
+                ))
+        );
+
+        assertTrue(errors
+                .stream()
+                .anyMatch(error -> Objects.equals(
+                        error.description,
+                        InvalidDeclarationValue.create("height", "TRUE").getError()
+                ))
+        );
+
+        assertTrue(errors
+                .stream()
+                .anyMatch(error -> Objects.equals(
+                        error.description,
+                        InvalidDeclarationValue.create("width", "#000000").getError()
+                ))
+        );
+
+        assertTrue(errors
+                .stream()
+                .anyMatch(error -> Objects.equals(
+                        error.description,
+                        InvalidDeclarationValue.create("height", "FALSE").getError()
                 ))
         );
     }
