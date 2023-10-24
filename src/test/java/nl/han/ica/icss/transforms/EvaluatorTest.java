@@ -19,4 +19,15 @@ public class EvaluatorTest {
 
         assertEquals(expected, actual);
     }
+
+    @Test
+    public void testLevel3() throws IOException {
+        AST actual = ASTHelper.parseTestFile("level3.icss");
+
+        new Evaluator().apply(actual);
+
+        AST expected = Fixtures.transformedLevel3();
+
+        assertEquals(expected, actual);
+    }
 }
