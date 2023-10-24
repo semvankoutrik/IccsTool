@@ -31,10 +31,10 @@ public class Checker {
             if (childNode instanceof Declaration) {
                 var declaration = (Declaration) childNode;
 
-                if(declaration.expression instanceof VariableReference) {
+                if (declaration.expression instanceof VariableReference) {
                     var reference = (VariableReference) declaration.expression;
                     var variable = variables.get(reference.name);
-                    if (variable == null) reference.setError("Variable does not exist.");
+                    if (variable == null) reference.setError("Variable " + reference.name + " not found");
                 }
             } else {
                 checkVariableReferences(childNode);
