@@ -12,9 +12,9 @@ import nl.han.ica.icss.helpers.VariableHelper;
 import java.util.HashMap;
 
 public class IfClauseChecker {
-    public static void check(IfClause node, IHANLinkedList<HashMap<String, Expression>> variables) {
+    public static void check(IfClause ifClause, IHANLinkedList<HashMap<String, Expression>> variables) {
         var scopeVariables = VariableHelper.scopeVariablesListToHashMap(variables);
-        var expr = node.conditionalExpression;
+        var expr = ifClause.conditionalExpression;
 
         if (expr instanceof VariableReference) {
             var ref = (VariableReference) expr;
@@ -22,22 +22,22 @@ public class IfClauseChecker {
             var value = scopeVariables.get(ref.name);
 
             if (value == null) {
-                node.setError(VariableNotFound.create(ref.name).getError());
+                ifClause.setError(VariableNotFound.create(ref.name).getError());
             } else {
                 if (!(value instanceof BoolLiteral)) {
-                    node.setError(InvalidConditionalExpression.create(value.toString()).getError());
+                    ifClause.setError(InvalidConditionalExpression.create(value.toString()).getError());
                 }
             }
         } else {
             // Not allowed by the parser as well, but just to be sure.
             if (!(expr instanceof BoolLiteral)) {
-                node.setError(InvalidConditionalExpression.create(expr.toString()).getError());
+                ifClause.setError(InvalidConditionalExpression.create(expr.toString()).getError());
             }
         }
 
-        Checker.check(node.getChildren(), variables);
+        Checker.check(ifClause.getChildren(), variables);
 
-        var elseClause = node.elseClause;
+        var elseClause = ifClause.elseClause;
 
         if (elseClause != null) {
             Checker.check(elseClause.getChildren(), variables);
